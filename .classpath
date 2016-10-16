@@ -19,6 +19,6 @@
 			<attribute name="owner.project.facets" value="jst.web.jstl"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/Download_A/gson-1.7.2.jar/gson-1.7.2.jar"/>
+	<classpathentry kind="lib" path="E:/samsung r467 bacup/E Disk/MyTask/About School and learn/Java Learn/extra_jar/gson/gson-2.2.4.jar"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>

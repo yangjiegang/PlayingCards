@@ -10,32 +10,76 @@ var readyBtn = document.getElementById("ready");
 var nickEle = document.getElementById("nickname");
 var myTotalEle = myCardsEles[6];
 var myCards = new Array();
+//var myPokerMap = new Map();
 var othersCards = {};
 
 window.onload = function(){
 	moreEle.setAttribute("disabled", "");//this attribute is able to be null
 	finishEle.setAttribute("disabled", "");
+	readyBtn.firstChild.setAttribute("disabled", "disabled");
+	$("#loginModal").modal("show");
 };
+
+nickEle.onkeyup = function valiNick(){
+	if(nickEle.value!="" && nickEle.value!=null){
+		$.ajax({
+			url:"service/valiNick",
+			data:{"uname":nickEle.value},
+			type:"POST",
+			success:function(data){
+				if(data!="" && data!=null && data=="1"){
+//					alert("ok");
+					$("#valiNickResult>span:nth-of-type(1)").css("display","block");
+					$("#valiNickResult>span:nth-of-type(1)").siblings().hide();
+				}else{
+//					alert("no");
+					$("#valiNickResult>span:nth-of-type(2)").css("display","block");
+					$("#valiNickResult>span:nth-of-type(2)").siblings().hide();
+				}
+			}
+		});
+	}	
+};
+
+$("#loginBtn").bind("click", function(){
+	if (nickEle.value.length != 0){
+		if(myCards.length == 0) {
+			$.ajax({
+				url : "service/gameInit",
+				data:{"nickname" : nickEle.value},
+				type : "POST",
+				success : function(data) {
+					if(data==nickEle.value){
+						myCardsEles[0].innerText = data;
+						myCardsEles[0].innerText = nickEle.value;
+//						gameStart();
+//						console.log("Game start!");
+//						readyBtn.setAttribute("disabled", "disabled");//no use
+//						nickEle.setAttribute("disabled", "");
+						readyBtn.firstChild.removeAttribute("disabled");
+						$("#loginModal").modal("hide");
+					}else{
+						console.info("nickname not match");
+					}
+				}
+			});
+		} else {
+			alert("Game has been started!");
+		}	
+	} else {
+		alert("no blank name!");
+	}
+});
 
 readyBtn.addEventListener("click", function() {
 	if (myCards.length == 0) {
-		$.ajax({
-			url : "service/gameInit",
-			type : "POST",
-			success : function(data) {
-				gameStart();
-//				console.log("Game start!");
-//				readyBtn.setAttribute("disabled", "disabled");//no use
-				nickEle.setAttribute("disabled", "");
-				readyBtn.firstChild.setAttribute("disabled", "disabled");
-				moreEle.removeAttribute("disabled");
-				finishEle.removeAttribute("disabled");
-			}
-		});
+		gameStart();
+		readyBtn.setAttribute("disabled", "disabled");
 	} else {
-		alert("Game has been started!");
+		alert("Game has been started already!");
 	}
 });
+
 moreBtn.addEventListener("click", function() {
 	if (myCards.length < 5) {
 		$.ajax({
@@ -48,6 +92,7 @@ moreBtn.addEventListener("click", function() {
 //				console.log(data);
 				var value = getCardValue(data);
 				myCards[myCards.length] = value;
+//				myPokerMap.set();
 				showCards(myCards, myCardsEles);
 				sumCards(myCards, myTotalEle);
 			},
@@ -71,7 +116,8 @@ finishBtn.addEventListener("click", function() {
 				moreEle.setAttribute("disabled", "disabled");
 				finishEle.setAttribute("disabled", "disabled");
 				if(data!= null && data!=""){
-					alert("Winner: " + data);
+					$("#resultDiv").append($("<h3></h3>").text("Winner: " + data));
+					$("#resModal").modal("show");
 				}
 			}
 		});
@@ -84,7 +130,7 @@ function gameStart() {
 	$.ajax({
 				url : "service/gameStart",
 				data : {
-					 "nickname" : nickEle.value
+					 "nickname" : myCardsEles[0].innerText
 				},
 				type : "POST",
 				success : function(data, status, statecodes) {
@@ -93,6 +139,10 @@ function gameStart() {
 					myCardsEles[0].innerText = obj.nickname;
 					showCards(myCards, myCardsEles);
 					sumCards(myCards, myTotalEle);
+					
+					readyBtn.firstChild.setAttribute("disabled",true);
+					moreEle.removeAttribute("disabled");
+					finishEle.removeAttribute("disabled");
 				}
 			});
 }
@@ -121,7 +171,9 @@ function getCardValue(card) {
 
 function showCards(cards, cardsEles) {
 	for (var i = 0; i < cards.length; i++) {
-		cardsEles[i + 1].innerText = cards[i];
+//		cardsEles[i + 1].innerText = cards[i];
+		cardsEles[i + 1].firstChild.setAttribute("src", "images/poker/poker_"+getCardValue(cards[i])+".jpg");
+		cardsEles[i + 1].firstChild.setAttribute("alt", getCardValue(cards[i]));
 	}
 }
 
@@ -163,7 +215,7 @@ function getOthersData() {
 				}
 			},
 			error : function(e) {
-				console.log(e+"getOthersData error!");
+				console.error(e+"getOthersData error!");
 			}
 		});
 	}

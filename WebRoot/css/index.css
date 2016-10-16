@@ -1,0 +1,68 @@
+#msgBox{
+	min-height:400px;
+	max-height:550px;
+	border:2px solid grey;
+	border-redius:20px;
+}
+#msgPanel{
+	overflow:scroll;
+	padding:5px;
+	min-height:300px;
+	max-height:400px;
+}
+#sndBox{
+	min-height:50px;
+	margin:20px auto 10px;
+	padding:5px;
+}
+.maq{
+	font:15px Bold YaHei;
+}
+#valiNickResult>span{
+	display:none;
+}
+.singleMsg {
+	margin:5px;
+	padding: 5px;
+	background: lightblue;
+	border-radius: 10px;
+	background-color:#A6DADC;
+	box-shadow:1px 1px 2px hsla(0, 0%, 0%, 0.3);
+	color: grey;
+	font:12px Bold YaHei;
+}
+.singleMsg:hover{  
+    top:-5px;  
+    left:-5px;  
+    box-shadow:3px 3px 2x hsla(0, 0%, 0%, 0.3);  
+}
+.triangle {
+	height: 0px;
+	width: 0px;
+	border-width: 20px;
+	border-style: solid;
+	border-color: green transparent transparent transparent;
+}
+.left:before {
+	position: absolute;
+	content: "\00a0";
+	width: 0px;
+	height: 0px;
+	border-width: 8px 18px 8px 0;
+	border-style: solid;
+	border-color: transparent #A6DADC transparent transparent;
+	top: 15px;
+	left: -18px;
+}
+.right:before {
+	position: absolute;
+	content: "\00a0";
+	display: inline-block;
+	width: 0px;
+	height: 0px;
+	border-width: 8px 0px 8px 18px;
+	border-style: solid;
+	border-color: transparent transparent transparent #A6DADC;
+	left: 250px;
+	top: 15px;
+}
