@@ -21,13 +21,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
-/*import org.apache.struts2.json.JSONException;
- import org.apache.struts2.json.JSONUtil;*/
-
 public class Service extends HttpServlet {
 
 	/**
-	 * 
+	 * @author:yangjiegang
 	 */
 	private static final long serialVersionUID = 1L;
 	private Game game;
@@ -36,8 +33,6 @@ public class Service extends HttpServlet {
 	private PrintWriter pWriter;
 	private ArrayList<Player> players;
 	private TreeMap<Long, HashMap<String, String>>chatDataMap;
-	
-//	private ArrayList<Player> othersData;
 	
 	@Override
 	public void init(){
@@ -61,10 +56,6 @@ public class Service extends HttpServlet {
 			// appCtx.setAttribute("players", players);
 		}
 	}
-	
-/*	public Service() {
-		System.out.println("service constructor");
-	}*/
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) {
 		// String path = request.getServletPath();
@@ -195,7 +186,7 @@ public class Service extends HttpServlet {
 		
 		String nickname = (String) request.getSession().getAttribute("nickname");
 		if (myName.equals(nickname)) {
-			Game game = (Game) this.getServletContext().getAttribute("game");// package_package_package_package_package_package_
+			Game game = (Game) this.getServletContext().getAttribute("game");
 			Player me = findPlayer(myName);
 			System.out.println(game.getPlayers());
 			me.setStatus((byte) 2);//-1:off-line, 0:ready, 1:playing, 2:finish, 3:over
@@ -204,7 +195,6 @@ public class Service extends HttpServlet {
 					"business");
 			Integer weight = business.weight(me.getMyCards());
 			game.getAllWeights().put(weight, myName);// one of player is finish
-	//		System.out.println(game.getAllWeights());
 			if (game.getFinishCount() == game.getpCount()) {// all players are finish
 				System.out.println("game.getAllWeights():"+game.getAllWeights());
 				winner = business.referee(game.getAllWeights(), game.getpCount());
@@ -218,7 +208,6 @@ public class Service extends HttpServlet {
 	
 	public void getChatData(HttpServletRequest request, HttpServletResponse response){
 
-//		LinkedHashSet<Long>pushMsgTimeSet = new LinkedHashSet<>();
 		String myName = request.getParameter("uname");
 		
 		String nickname = (String) request.getSession().getAttribute("nickname");
@@ -227,24 +216,10 @@ public class Service extends HttpServlet {
 			TreeMap<Long, HashMap<String, String>>chatDataMap = (TreeMap<Long, HashMap<String, String>>) this.getServletContext().getAttribute("chatDataMap");
 			if (chatDataMap.size()!=0 && notEmpty(myName)) {
 				SimpleDateFormat sdf = new SimpleDateFormat();
-	//			Long getMsgTime = new Date().getTime();
-	//			Long[]tmpArrayLongs = pushMsgTimeSet.toArray(new Long[pushMsgTimeSet.size()]);
-	//			Long prevMsgTime = tmpArrayLongs[tmpArrayLongs.length];
-				
 				Long startTime = chatDataMap.lastKey()-1000*60;
-//				System.out.println(chatDataMap+","+ startTime);
-				
-	//			SortedMap<Long, HashMap<String, String>> subMap = null;
-	//			TreeMap<Long, HashMap<String, String>> dataMap = new TreeMap<>();
 				ArrayList<HashMap<String, String>> msgList = new ArrayList<>();
 				for (Long sndMsgTime : chatDataMap.keySet()) {
 					if (startTime<=sndMsgTime) {
-	//					TreeMap<Long, HashMap<String, String>>getMsgMap = (TreeMap<Long, HashMap<String, String>>) chatDataMap.subMap(sndMsgTime, chatDataMap.lastKey());
-	//					subMap = chatDataMap.subMap(getMsgTime, chatDataMap.lastKey());
-	//					dataMap.put(sndMsgTime, chatDataMap.get(sndMsgTime));
-	//					HashMap<String, String>hashMap = new HashMap<>();
-	//					hashMap.put("sndMsgTime", sndMsgTime.toString());
-	//					msgList.add(hashMap);
 						HashMap<String, String> map = chatDataMap.get(sndMsgTime);
 						for (Map.Entry<String, String>entry : map.entrySet() ) {
 							HashMap<String, String> map2 = new HashMap<String, String>();
@@ -256,10 +231,8 @@ public class Service extends HttpServlet {
 						}
 					}
 				}
-//				System.out.println(msgList);
 				Gson gson = new Gson();
 				String msgMapString = gson.toJson(msgList);
-	//			pushMsgTimeSet.add(new Date().getTime());//record last push time
 				stdOut(response, msgMapString);
 			}
 		}
@@ -277,7 +250,6 @@ public class Service extends HttpServlet {
 				HashMap<String, String>msgMap = new HashMap<>();
 				msgMap.put(uname, message);
 				chatDataMap.put(sndMsgTime, msgMap);
-	//			System.out.println(chatDataMap);
 				stdOut(response, "1");
 			}
 		}
@@ -312,10 +284,6 @@ public class Service extends HttpServlet {
 	public void stdOut(HttpServletResponse response, Object content){
 		try {
 			response.setContentType("text/JavaScript;charset=UTF-8");
-//			response.setContentType("application/json;charset=UTF-8");
-//			response.setContentType("text/plain; charset=UTF-8"); 
-//			response.setContentType("text/html; charset=UTF-8");
-//			response.setContentType("application/json;charset=UTF-8");
 			PrintWriter pWriter = response.getWriter();
 			pWriter.print(content);
 			pWriter.flush();
@@ -340,34 +308,4 @@ public class Service extends HttpServlet {
 		
 	}
 	
-	//test
-	public static void main(String[] args) {
-		// Service service = new Service();
-/*		Game game = new Game(4);
-		ArrayList<Player> players = new ArrayList<Player>();
-		for (int i = 0; i < 4; i++) {
-			Player player = new Player();
-			player.setNickname("player" + i);
-			player.setStatus((byte) 1);
-			ArrayList<String> myCards = new ArrayList<>();
-			myCards.add(String.valueOf(i + 2));
-			myCards.add(String.valueOf(i + 4));
-			myCards.add(String.valueOf(i + 3));
-			player.setMyCards(myCards);
-			players.add(player);
-		}
-		game.setFinishCount(4);
-		Business business = new Business();// is able to be a static class
-		Gson gson = new Gson();
-		String jsonString = gson.toJson(players);
-		System.out.println(jsonString);
-		for (Player player : players) {
-			Integer weight = business.weight(player.getMyCards());
-			game.getAllWeights().put(weight, player.getNickname());
-		}
-		String winner = business.referee(game.getAllWeights(), game.getpCount());
-		System.out.println(winner);*/
-
-	}
-
 }
